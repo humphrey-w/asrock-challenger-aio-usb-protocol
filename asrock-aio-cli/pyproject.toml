@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools >=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "asrock-aio-cli"
+version = "0.1.0"
+authors = [{name="Humphrey Waititu", email="hwaititu@gmail.com"}]
+description = "A command-line tool for displaying system metrics on the LCD screen of the ASRock Challenger 360 Digital."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["models"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
