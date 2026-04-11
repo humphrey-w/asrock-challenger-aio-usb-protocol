@@ -29,5 +29,5 @@ def test_packet_builder_with_pump_rpm():
 
     assert packet.metrics_type == 0x04  # Metrics type (PUMP_RPM)
     assert packet.encoded_value == b"\x01\x02\x00\x00"  # 1200 RPM
-    assert packet.mode == 0x04  # Mode (MODE_3)
-    assert packet.bar_indicator == 0x0e  # Bar indicator (14)
+    assert packet.reserved_byte_1 == 0x04  # Mode (MODE_3)
+    assert packet.reserved_byte_2 == 0x0e  # Bar indicator (14)

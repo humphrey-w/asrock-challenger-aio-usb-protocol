@@ -23,8 +23,8 @@ def test_usb_packet_to_bytes():
         report_id=0x07,
         metrics_type=protocol.MetricsType.CPU_TEMPERATURE,
         encoded_value=b"\x00\x33\x09\x00",  # Example from README
-        mode=protocol.DisplayMode.MODE_3,
-        bar_indicator=0x08
+        reserved_byte_1=protocol.DisplayMode.MODE_3,
+        reserved_byte_2=0x08
     )
 
     bytes_result = packet.to_bytes()

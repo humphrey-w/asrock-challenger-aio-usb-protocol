@@ -4,7 +4,7 @@ from models.protocol import USBPacket, MetricsType, DisplayMode
 
 class PacketBuilder:
     """Builder for constructing USBPacket instances from SystemMetrics."""
-    PAD_BYTE = 0x00
+    PAD_BYTE: int = 0x00
 
     def __init__(self):
         self.metrics_type: MetricsType
@@ -52,7 +52,7 @@ class PacketBuilder:
         packet = USBPacket(
             metrics_type=self.metrics_type,
             encoded_value=self.encoded_value,
-            mode=self.reserved_byte_1,
-            bar_indicator=self.reserved_byte_2
+            reserved_byte_1=self.reserved_byte_1,
+            reserved_byte_2=self.reserved_byte_2
         )
         return packet

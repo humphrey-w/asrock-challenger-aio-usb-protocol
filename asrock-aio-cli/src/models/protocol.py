@@ -33,7 +33,7 @@ class DisplayMode(IntEnum):
     - Digit ends in 3, 5, 7 → MODE_2
     - Digit ends in 0, 4, 8 → MODE_3
     """
-
+    MODE_0 = 0x00  # Padding mode (no display update)
     MODE_1 = 0x02  # Pump RPM (centered) + CPU Temp (corner)
     MODE_2 = 0x03  # CPU Frequency (centered) + CPU Temp (corner)
     MODE_3 = 0x04  # CPU Temperature (centered)
@@ -54,12 +54,11 @@ class USBPacket:
     The frozen=True parameter makes instances immutable, which is important for
     passing around protocol data without accidental modifications.
     """
-
     report_id: int = 0x07
     metrics_type: MetricsType = MetricsType.CPU_TEMPERATURE
     encoded_value: bytes = b"\x00\x00\x00\x00"
-    mode: DisplayMode = DisplayMode.MODE_3
-    bar_indicator: int = 0x00
+    reserved_byte_1: DisplayMode = DisplayMode.MODE_0
+    reserved_byte_2: int = 0x00
 
     def __post_init__(self):
         """Validate packet structure."""
@@ -74,9 +73,10 @@ class USBPacket:
                 f"Encoded value must be 4 bytes, got {len(self.encoded_value)}"
             )
 
-        if not (0x00 <= self.bar_indicator <= 0x14):
+        if not 0x00 <= self.reserved_byte_2 <= 0x14:
             raise ValueError(
-                f"Bar indicator must be 0x00-0x14, got {self.bar_indicator:#x}"
+                f"Bar indicator must be 0x00-0x14, got {
+                    self.reserved_byte_2:#x}"
             )
 
     def to_bytes(self) -> bytes:
@@ -86,13 +86,14 @@ class USBPacket:
         Returns:
             bytes: 64-byte USB packet with proper padding
         """
-        # Build the packet: [report_id, metrics_type, encoded_value..., mode, bar, padding]
+        # Build the packet: [report_id, metrics_type, encoded_value..., mode,
+        # bar, padding]
         packet = bytearray(64)
         packet[0] = self.report_id
         packet[1] = int(self.metrics_type)
         packet[2:6] = self.encoded_value
-        packet[6] = int(self.mode)
-        packet[7] = self.bar_indicator
+        packet[6] = self.reserved_byte_1
+        packet[7] = self.reserved_byte_2
         # Remaining bytes default to 0x00
 
         return bytes(packet)
