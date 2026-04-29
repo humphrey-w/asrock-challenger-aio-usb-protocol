@@ -15,7 +15,8 @@ class TemperatureEncoder(Encoder):
     """Encoder for CPU temperature values."""
     def encode(self, value: float) -> bytes:
         """Encode CPU temperature as bytes."""
-        digits = [int(i) for i in str(int(value))]
+        temp_str = str(int(value)).zfill(2)  # Pad to 2 digits
+        digits = [int(i) for i in temp_str]
         encoded_temp = bytes([self.PAD_BYTE] + digits + [self.PAD_BYTE])
         return encoded_temp
 
@@ -24,7 +25,8 @@ class FrequencyEncoder(Encoder):
     """Encoder for CPU frequency values."""
     def encode(self, value: int) -> bytes:
         """Encode CPU frequency as bytes."""
-        digits = [int(i) for i in str(int(value))]
+        freq_str = str(int(value)).zfill(4)  # Pad to 4 digits
+        digits = [int(i) for i in freq_str]
         encoded_freq = bytes(digits)
         return encoded_freq
 
@@ -33,7 +35,8 @@ class PumpRPMEncoder(Encoder):
     """Encoder for pump RPM values."""
     def encode(self, value: int) -> bytes:
         """Encode pump RPM as bytes."""
-        digits = [int(i) for i in str(int(value))]
+        rpm_str = str(int(value)).zfill(4)  # Pad to 4 digits
+        digits = [int(i) for i in rpm_str]
         encoded_rpm = bytes(digits)
         return encoded_rpm
 
