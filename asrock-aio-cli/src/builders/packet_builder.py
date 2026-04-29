@@ -1,4 +1,6 @@
 """PacketBuilder constructs USBPacket instances from SystemMetrics data."""
+from encoders import (Encode, TemperatureEncoder, FrequencyEncoder,
+                      PumpRPMEncoder)
 from models.protocol import USBPacket, MetricsType, DisplayMode
 
 
@@ -26,25 +28,22 @@ class PacketBuilder:
                              temperature_celsius: float) -> 'PacketBuilder':
         """Set CPU temperature in the packet."""
         self.metrics_type = MetricsType.CPU_TEMPERATURE
-        digits = [int(i) for i in str(int(temperature_celsius))]
-        encoded_temp = bytes([self.PAD_BYTE] + digits + [self.PAD_BYTE])
-        self.encoded_value = encoded_temp
+        encoder = Encode(TemperatureEncoder())
+        self.encoded_value = encoder.encode(temperature_celsius)
         return self
 
     def with_cpu_frequency(self, frequency_mhz: int) -> 'PacketBuilder':
         """Set CPU frequency in the packet."""
         self.metrics_type = MetricsType.CPU_FREQUENCY
-        digits = [int(i) for i in str(int(frequency_mhz))]
-        encoded_freq = bytes(digits)
-        self.encoded_value = encoded_freq
+        encoder = Encode(FrequencyEncoder())
+        self.encoded_value = encoder.encode(frequency_mhz)
         return self
 
     def with_pump_rpm(self, pump_rpm: int) -> 'PacketBuilder':
         """Set pump RPM in the packet."""
         self.metrics_type = MetricsType.PUMP_RPM
-        digits = [int(i) for i in str(int(pump_rpm))]
-        encoded_rpm = bytes(digits)
-        self.encoded_value = encoded_rpm
+        encoder = Encode(PumpRPMEncoder())
+        self.encoded_value = encoder.encode(pump_rpm)
         return self
 
     def build(self) -> USBPacket:
