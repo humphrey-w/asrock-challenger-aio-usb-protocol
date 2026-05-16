@@ -1,9 +1,10 @@
+"""Unit tests for the models module."""
 from models import metrics
 from models import protocol
 
 
 def test_system_metrics():
-    '''Tests the SystemMetrics class.'''
+    """Tests the SystemMetrics class."""
     # Fix parameter names to match class definition
     metrics_data = {
         "cpu_temperature_celsius": 50.0,
@@ -17,12 +18,12 @@ def test_system_metrics():
 
 
 def test_usb_packet_to_bytes():
-    '''Tests the to_bytes method of the USBPacket class.'''
+    """Tests the to_bytes method of the USBPacket class."""
     # Create a packet with specific values
     packet = protocol.USBPacket(
         report_id=0x07,
         metrics_type=protocol.MetricsType.CPU_TEMPERATURE,
-        encoded_value=b"\x00\x33\x09\x00",  # Example from README
+        encoded_value=b'\x00\x33\x09\x00',  # Example from README
         reserved_byte_1=protocol.DisplayMode.MODE_3,
         reserved_byte_2=0x08
     )
@@ -35,7 +36,7 @@ def test_usb_packet_to_bytes():
     # Check specific byte positions from README structure
     assert bytes_result[0] == 0x07  # Report ID
     assert bytes_result[1] == 0x00  # Metrics type (CPU temp)
-    assert bytes_result[2:6] == b"\x00\x33\x09\x00"  # Encoded value
+    assert bytes_result[2:6] == b'\x00\x33\x09\x00'  # Encoded value
     assert bytes_result[6] == 0x04  # Mode (MODE_3 = 0x04)
     assert bytes_result[7] == 0x08  # Bar indicator
 
