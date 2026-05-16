@@ -1,7 +1,12 @@
-"""Mock transport for testing without hardware."""
+"""Unit tests for the transport classes."""
 import pytest
 from typing import List
-from transports import Transport, TransmissionError
+from transports import (
+    Transport,
+    TransmissionError,
+    HIDTransport,
+    DeviceNotFoundError
+)
 
 
 class MockTransport(Transport):
@@ -102,3 +107,59 @@ def test_context_manager():
     with MockTransport() as transport:
         assert transport.is_connected()
     assert not transport.is_connected()
+
+
+def test_hid_transport_connection():
+    """Test HID transport connection."""
+    transport = HIDTransport()
+    try:
+        transport.connect()
+        assert transport.is_connected()
+    except DeviceNotFoundError as e:
+        pytest.skip(e)
+    finally:
+        transport.close()
+
+
+def test_hid_transport_send_packet():
+    """Test sending a packet with HID transport."""
+    transport = HIDTransport()
+    try:
+        transport.connect()
+        packet = b'\x07' + b'\x00' * 63
+        transport.send_packet(packet)
+    except DeviceNotFoundError as e:
+        pytest.skip(e)
+    finally:
+        transport.close()
+
+
+def test_hid_transport_send_sequence():
+    """Test sending a sequence of packets with HID transport."""
+    transport = HIDTransport()
+    try:
+        transport.connect()
+        packets = [
+            b'\x07\x00' + b'\x00' * 62,
+            b'\x07\x03' + b'\x00' * 62,
+            b'\x07\x04' + b'\x00' * 62,
+        ]
+        transport.send_sequence(packets)
+    except DeviceNotFoundError as e:
+        pytest.skip(e)
+    finally:
+        transport.close()
+
+
+def test_hid_transport_disconnect():
+    """Test HID transport disconnection."""
+    transport = HIDTransport()
+    try:
+        transport.connect()
+        assert transport.is_connected()
+        transport.disconnect()
+        assert not transport.is_connected()
+    except DeviceNotFoundError as e:
+        pytest.skip(e)
+    finally:
+        transport.close()

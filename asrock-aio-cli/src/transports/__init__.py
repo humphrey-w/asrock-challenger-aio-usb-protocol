@@ -6,10 +6,12 @@ from .transport import (
     DeviceNotFoundError,
     TransmissionError
 )
+from .hid_transport import HIDTransport
 
 __all__ = [
     "Transport",
     "TransportError",
     "DeviceNotFoundError",
     "TransmissionError",
+    "HIDTransport"
 ]
