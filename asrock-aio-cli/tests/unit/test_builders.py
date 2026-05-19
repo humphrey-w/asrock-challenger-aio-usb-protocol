@@ -1,6 +1,6 @@
 """Unit tests for the PacketBuilder class."""
+from models import DisplayMode
 from builders import PacketBuilder
-from models.protocol import DisplayMode
 
 
 def test_packet_builder_with_temperature():

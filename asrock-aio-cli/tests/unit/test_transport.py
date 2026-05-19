@@ -1,57 +1,10 @@
 """Unit tests for the transport classes."""
 import pytest
-from typing import List
 from transports import (
-    Transport,
-    TransmissionError,
     HIDTransport,
+    MockTransport,
     DeviceNotFoundError
 )
-
-
-class MockTransport(Transport):
-    """Mock transport that records sent packets for testing."""
-
-    def __init__(self):
-        self._connected = False
-        self.sent_packets: List[bytes] = []
-        self.should_fail = False
-
-    def connect(self) -> None:
-        """Simulate connection."""
-        self._connected = True
-
-    def disconnect(self) -> None:
-        """Simulate disconnection."""
-        self._connected = False
-
-    def is_connected(self) -> bool:
-        """Return connection status."""
-        return self._connected
-
-    def send_packet(self, packet: bytes) -> None:
-        """Record packet without sending."""
-        if not self.is_connected():
-            raise RuntimeError("Not connected")
-
-        if self.should_fail:
-            raise TransmissionError("Simulated transmission failure")
-
-        self.sent_packets.append(packet)
-
-    def send_sequence(self, packets: List[bytes]) -> None:
-        """Send multiple packets in sequence."""
-        for packet in packets:
-            self.send_packet(packet)
-
-    def close(self) -> None:
-        """Clean up."""
-        self.disconnect()
-
-    def reset(self) -> None:
-        """Reset for next test."""
-        self.sent_packets = []
-        self.should_fail = False
 
 
 def test_mock_transport_connection():
@@ -116,7 +69,7 @@ def test_hid_transport_connection():
         transport.connect()
         assert transport.is_connected()
     except DeviceNotFoundError as e:
-        pytest.skip(e)
+        pytest.skip(f"{e}")
     finally:
         transport.close()
 
@@ -129,7 +82,7 @@ def test_hid_transport_send_packet():
         packet = b'\x07' + b'\x00' * 63
         transport.send_packet(packet)
     except DeviceNotFoundError as e:
-        pytest.skip(e)
+        pytest.skip(f"{e}")
     finally:
         transport.close()
 
@@ -146,7 +99,7 @@ def test_hid_transport_send_sequence():
         ]
         transport.send_sequence(packets)
     except DeviceNotFoundError as e:
-        pytest.skip(e)
+        pytest.skip(f"{e}")
     finally:
         transport.close()
 
@@ -160,6 +113,6 @@ def test_hid_transport_disconnect():
         transport.disconnect()
         assert not transport.is_connected()
     except DeviceNotFoundError as e:
-        pytest.skip(e)
+        pytest.skip(f"{e}")
     finally:
         transport.close()

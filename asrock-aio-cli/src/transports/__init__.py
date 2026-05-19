@@ -4,7 +4,8 @@ from .transport import (
     Transport,
     TransportError,
     DeviceNotFoundError,
-    TransmissionError
+    TransmissionError,
+    MockTransport
 )
 from .hid_transport import HIDTransport
 
@@ -13,5 +14,6 @@ __all__ = [
     "TransportError",
     "DeviceNotFoundError",
     "TransmissionError",
-    "HIDTransport"
+    "HIDTransport",
+    "MockTransport"
 ]

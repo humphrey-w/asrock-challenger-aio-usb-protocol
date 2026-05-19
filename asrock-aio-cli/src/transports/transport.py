@@ -72,3 +72,48 @@ class Transport(ABC):
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Context manager support."""
         self.close()
+
+
+class MockTransport(Transport):
+    """Mock transport that records sent packets for testing."""
+
+    def __init__(self):
+        self._connected = False
+        self.sent_packets: List[bytes] = []
+        self.should_fail = False
+
+    def connect(self) -> None:
+        """Simulate connection."""
+        self._connected = True
+
+    def disconnect(self) -> None:
+        """Simulate disconnection."""
+        self._connected = False
+
+    def is_connected(self) -> bool:
+        """Return connection status."""
+        return self._connected
+
+    def send_packet(self, packet: bytes) -> None:
+        """Record packet without sending."""
+        if not self.is_connected():
+            raise RuntimeError("Not connected")
+
+        if self.should_fail:
+            raise TransmissionError("Simulated transmission failure")
+
+        self.sent_packets.append(packet)
+
+    def send_sequence(self, packets: List[bytes]) -> None:
+        """Send multiple packets in sequence."""
+        for packet in packets:
+            self.send_packet(packet)
+
+    def close(self) -> None:
+        """Clean up."""
+        self.disconnect()
+
+    def reset(self) -> None:
+        """Reset for next test."""
+        self.sent_packets = []
+        self.should_fail = False
