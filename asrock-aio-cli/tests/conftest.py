@@ -29,19 +29,22 @@ def hid_transport():
 @pytest.fixture
 def packets(request):
     """Fixture that provides sample system metrics for testing."""
+    builder = PacketBuilder()
     system_metrics = SystemMetrics(
         cpu_temperature_celsius=39, cpu_frequency_mhz=3600, pump_rpm=2967)
-    temp_packet = PacketBuilder().with_cpu_temperature(
+    temp_packet = builder.with_cpu_temperature(
         system_metrics.cpu_temperature_celsius).build()
-    freq_packet = PacketBuilder().with_cpu_frequency(
+    builder.reset()
+    freq_packet = builder.with_cpu_frequency(
         system_metrics.cpu_frequency_mhz).build()
+    builder.reset()
     pump_packet = (
-        PacketBuilder()
-        .with_pump_rpm(system_metrics.pump_rpm)
+        builder.with_pump_rpm(system_metrics.pump_rpm)
         .with_mode(
             request.param if hasattr(request, 'param') else DisplayMode.MODE_3)
         .with_bar_indicator(8)
         .build()
     )
+    builder.reset()
 
     return temp_packet, freq_packet, pump_packet

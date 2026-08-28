@@ -55,3 +55,11 @@ class PacketBuilder:
             reserved_byte_2=self.reserved_byte_2
         )
         return packet
+
+    def reset(self) -> 'PacketBuilder':
+        """Reset the builder to its initial state."""
+        self.metrics_type = None
+        self.encoded_value = None
+        self.reserved_byte_1 = self.PAD_BYTE
+        self.reserved_byte_2 = self.PAD_BYTE
+        return self
