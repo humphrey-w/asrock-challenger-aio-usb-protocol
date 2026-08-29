@@ -1,7 +1,7 @@
 """Pytest fixtures for testing the ASRock AIO CLI application."""
 import pytest
 from builders import PacketBuilder
-from models import SystemMetrics, DisplayMode
+from models import Limits, SystemMetrics, DisplayMode
 from transports import MockTransport, HIDTransport, DeviceNotFoundError
 
 
@@ -30,8 +30,13 @@ def hid_transport():
 def packets(request):
     """Fixture that provides sample system metrics for testing."""
     builder = PacketBuilder()
-    system_metrics = SystemMetrics(
-        cpu_temperature_celsius=39, cpu_frequency_mhz=3600, pump_rpm=2967)
+    limits = Limits(max_pump_rpm=3200, max_cpu_frequency_mhz=4968)
+    metrics_data = {
+        "cpu_temperature_celsius": 39.0,
+        "cpu_frequency_mhz": 3600,
+        "pump_rpm": 2967
+    }
+    system_metrics = SystemMetrics(**metrics_data, limits=limits)
     temp_packet = builder.with_cpu_temperature(
         system_metrics.cpu_temperature_celsius).build()
     builder.reset()

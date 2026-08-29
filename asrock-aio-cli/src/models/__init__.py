@@ -1,6 +1,6 @@
 """Models package - contains data transfer objects and protocol definitions."""
 
-from .metrics import SystemMetrics
+from .metrics import Limits, SystemMetrics
 from .protocol import (
     DisplayMode,
     LCDPacketSequence,
@@ -9,6 +9,7 @@ from .protocol import (
 )
 
 __all__ = [
+    "Limits",
     "SystemMetrics",
     "USBPacket",
     "LCDPacketSequence",

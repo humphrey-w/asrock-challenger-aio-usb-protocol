@@ -1,19 +1,58 @@
 """Unit tests for the models module."""
-from models import SystemMetrics, MetricsType, DisplayMode, USBPacket
+from models import Limits, SystemMetrics, MetricsType, DisplayMode, USBPacket
 
 
 def test_system_metrics():
     """Tests the SystemMetrics class."""
-    # Fix parameter names to match class definition
+    limits = Limits(max_pump_rpm=3200, max_cpu_frequency_mhz=4968)
+
     metrics_data = {
         "cpu_temperature_celsius": 50.0,
         "cpu_frequency_mhz": 3500,
         "pump_rpm": 1200
     }
-    system_metrics = SystemMetrics(**metrics_data)
+
+    system_metrics = SystemMetrics(**metrics_data, limits=limits)
+
     assert system_metrics.cpu_temperature_celsius == 50.0
     assert system_metrics.cpu_frequency_mhz == 3500
     assert system_metrics.pump_rpm == 1200
+
+    metrics_data_invalid_temp = {
+        "cpu_temperature_celsius": 150.0,
+        "cpu_frequency_mhz": 3500,
+        "pump_rpm": 1200
+    }
+
+    try:
+        SystemMetrics(**metrics_data_invalid_temp, limits=limits)
+        assert False, "Expected ValueError for invalid CPU temperature"
+    except ValueError:
+        pass
+
+    metrics_data_invalid_freq = {
+        "cpu_temperature_celsius": 50.0,
+        "cpu_frequency_mhz": 6000,
+        "pump_rpm": 1200
+    }
+
+    try:
+        SystemMetrics(**metrics_data_invalid_freq, limits=limits)
+        assert False, "Expected ValueError for invalid CPU frequency"
+    except ValueError:
+        pass
+
+    metrics_data_invalid_rpm = {
+        "cpu_temperature_celsius": 50.0,
+        "cpu_frequency_mhz": 3500,
+        "pump_rpm": 4000
+    }
+
+    try:
+        SystemMetrics(**metrics_data_invalid_rpm, limits=limits)
+        assert False, "Expected ValueError for invalid pump RPM"
+    except ValueError:
+        pass
 
 
 def test_usb_packet_to_bytes():
