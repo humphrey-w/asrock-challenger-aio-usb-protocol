@@ -6,6 +6,7 @@ from .protocol import (
     LCDPacketSequence,
     MetricsType,
     USBPacket,
+    MAX_BAR_INDICATOR
 )
 
 __all__ = [
@@ -15,4 +16,5 @@ __all__ = [
     "LCDPacketSequence",
     "MetricsType",
     "DisplayMode",
+    "MAX_BAR_INDICATOR"
 ]

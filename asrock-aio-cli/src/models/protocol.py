@@ -10,6 +10,9 @@ from enum import IntEnum
 from typing import List
 
 
+MAX_BAR_INDICATOR = 0x14  # Maximum value for bar indicator (20 bars)
+
+
 class MetricsType(IntEnum):
     """
     Represents the type of system information in a USB packet.
