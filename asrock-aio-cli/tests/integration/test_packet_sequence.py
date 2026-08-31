@@ -30,31 +30,11 @@ def test_packet_sequence_with_mock_transport(mock_transport, packets):
     assert len(mock_transport.sent_packets) == 0
 
 
-@pytest.mark.parametrize("packets", [DisplayMode.MODE_3], indirect=True)
+@pytest.mark.parametrize("packets", [DisplayMode.MODE_1, DisplayMode.MODE_2,
+                                     DisplayMode.MODE_3],
+                         ids=["pump", "freq", "temp"], indirect=True)
 def test_cpu_temp_packet_sequence_with_hid_transport(hid_transport, packets):
     """Test sending a packet sequence with CPU temp mode using the
-    HIDTransport."""
-    sequence = LCDPacketSequence(*packets)
-
-    assert hid_transport.is_connected()
-
-    hid_transport.send_sequence(sequence.to_bytes_sequence())
-
-
-@pytest.mark.parametrize("packets", [DisplayMode.MODE_2], indirect=True)
-def test_cpu_freq_packet_sequence_with_hid_transport(hid_transport, packets):
-    """Test sending a packet sequence with CPU frequency using the
-    HIDTransport."""
-    sequence = LCDPacketSequence(*packets)
-
-    assert hid_transport.is_connected()
-
-    hid_transport.send_sequence(sequence.to_bytes_sequence())
-
-
-@pytest.mark.parametrize("packets", [DisplayMode.MODE_1], indirect=True)
-def test_pump_rpm_packet_sequence_with_hid_transport(hid_transport, packets):
-    """Test sending a packet sequence with pump RPM mode using the
     HIDTransport."""
     sequence = LCDPacketSequence(*packets)
 

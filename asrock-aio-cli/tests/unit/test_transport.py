@@ -5,6 +5,7 @@ from transports import (
     MockTransport,
     DeviceNotFoundError
 )
+from models import DisplayMode
 
 
 def test_mock_transport_connection():
@@ -19,37 +20,34 @@ def test_mock_transport_connection():
     assert not transport.is_connected()
 
 
-def test_mock_transport_records_packets():
+@pytest.mark.parametrize("packet_index", [0, 1, 2],
+                         ids=["temp", "freq", "pump"])
+def test_mock_transport_records_packets(packets, packet_index):
     """Test that mock transport records sent packets."""
     transport = MockTransport()
     transport.connect()
 
-    packet = b'\x07' + b'\x00' * 63
+    packet = packets[packet_index]
     transport.send_packet(packet)
 
     assert len(transport.sent_packets) == 1
     assert transport.sent_packets[0] == packet
 
 
-def test_mock_transport_sends_sequence():
+def test_mock_transport_sends_sequence(packets):
     """Test sending multiple packets in sequence."""
     transport = MockTransport()
     transport.connect()
-
-    packets = [
-        b'\x07\x00' + b'\x00' * 62,
-        b'\x07\x03' + b'\x00' * 62,
-        b'\x07\x04' + b'\x00' * 62,
-    ]
-
     transport.send_sequence(packets)
     assert len(transport.sent_packets) == 3
 
 
-def test_mock_transport_fails_if_not_connected():
+@pytest.mark.parametrize("packet_index", [0, 1, 2],
+                         ids=["temp", "freq", "pump"])
+def test_mock_transport_fails_if_not_connected(packets, packet_index):
     """Test error when sending without connection."""
     transport = MockTransport()
-    packet = b'\x07' + b'\x00' * 63
+    packet = packets[packet_index]
 
     with pytest.raises(RuntimeError):
         transport.send_packet(packet)
@@ -74,30 +72,30 @@ def test_hid_transport_connection():
         transport.close()
 
 
-def test_hid_transport_send_packet():
+@pytest.mark.parametrize("packet_index", [0, 1, 2],
+                         ids=["temp", "freq", "pump"])
+def test_hid_transport_send_packet(packets, packet_index):
     """Test sending a packet with HID transport."""
     transport = HIDTransport()
     try:
         transport.connect()
-        packet = b'\x07' + b'\x00' * 63
-        transport.send_packet(packet)
+        packet = packets[packet_index]
+        transport.send_packet(packet.to_bytes())
     except DeviceNotFoundError as e:
         pytest.skip(f"{e}")
     finally:
         transport.close()
 
 
-def test_hid_transport_send_sequence():
+@pytest.mark.parametrize("packets", [DisplayMode.MODE_1, DisplayMode.MODE_2,
+                                     DisplayMode.MODE_3],
+                         ids=["pump", "freq", "temp"], indirect=True)
+def test_hid_transport_send_sequence(packets):
     """Test sending a sequence of packets with HID transport."""
     transport = HIDTransport()
     try:
         transport.connect()
-        packets = [
-            b'\x07\x00' + b'\x00' * 62,
-            b'\x07\x03' + b'\x00' * 62,
-            b'\x07\x04' + b'\x00' * 62,
-        ]
-        transport.send_sequence(packets)
+        transport.send_sequence([packet.to_bytes() for packet in packets])
     except DeviceNotFoundError as e:
         pytest.skip(f"{e}")
     finally:
