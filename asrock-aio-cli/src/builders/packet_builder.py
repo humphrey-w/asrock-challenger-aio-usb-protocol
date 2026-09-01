@@ -54,6 +54,7 @@ class PacketBuilder:
             reserved_byte_1=self.reserved_byte_1,
             reserved_byte_2=self.reserved_byte_2
         )
+        self.reset()  # Auto-reset after build
         return packet
 
     def reset(self) -> 'PacketBuilder':

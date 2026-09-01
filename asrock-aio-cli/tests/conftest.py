@@ -33,10 +33,8 @@ def packets(request, system_metrics):
     builder = PacketBuilder()
     temp_packet = builder.with_cpu_temperature(
         system_metrics.cpu_temperature_celsius).build()
-    builder.reset()
     freq_packet = builder.with_cpu_frequency(
         system_metrics.cpu_frequency_mhz).build()
-    builder.reset()
     pump_packet = (
         builder.with_pump_rpm(system_metrics.pump_rpm)
         .with_mode(mode)
@@ -59,8 +57,6 @@ def packets(request, system_metrics):
                    system_metrics.limits.max_cpu_temperature_celsius)
                   * MAX_BAR_INDICATOR)
         ).build()
-
-    builder.reset()
 
     return temp_packet, freq_packet, pump_packet
 
